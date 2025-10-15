@@ -42,7 +42,7 @@ async function authenticate(req, res, next) {
     const token = auth.split(' ')[1];
     let payload;
     try { payload = jwt.verify(token, JWT_SECRET); }
-    catch(e) { return res.status(401).json({ error: 'invalid token' }); }
+    catch (e) { return res.status(401).json({ error: 'invalid token' }); }
 
     // check session valid
     const conn = await pool.getConnection();
@@ -77,7 +77,7 @@ app.post('/api/auth/login', async (req, res) => {
     if (rows.length === 0) return res.status(401).json({ error: 'invalid credentials' });
 
     const user = rows[0];
-    const ok = await bcrypt.compare(password, user.password);
+    const ok = password === user.password;
     if (!ok) return res.status(401).json({ error: 'invalid credentials' });
 
     // create session record
