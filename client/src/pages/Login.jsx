@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import api from "../api/axios";
 import { AuthContext } from "../context/AuthContext";
+import "../assets/css/login.css"
 
 const Login = () => {
   const [nim, setNim] = useState("");
@@ -27,37 +28,40 @@ const Login = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+    <div className="LoginPage">
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-6 rounded-xl shadow-md w-80"
+        className="box"
       >
         <h2 className="text-2xl font-bold mb-4 text-center">Login E-Voting</h2>
 
-        <input
-          type="text"
-          placeholder="Masukkan NIM"
-          value={nim}
-          onChange={(e) => setNim(e.target.value)}
-          className="border w-full p-2 rounded mb-3"
-          required
-        />
-
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="border w-full p-2 rounded mb-3"
-          required
-        />
-
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 transition"
-        >
-          Login
-        </button>
+        <div className="contents">
+          <img src="/HIMATIF.png" className="brand" />
+          <div className="features">
+            <input
+              type="text"
+              placeholder="Masukkan NIM"
+              value={nim}
+              onChange={(e) => setNim(e.target.value)}
+              className="input"
+              required
+            />
+            <input
+              type="text"
+              placeholder="Masukan Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="input"
+              required
+            />
+            <button
+              type="submit"
+              className="input input-submit"
+            >
+              Login
+            </button>
+          </div>
+        </div>
       </form>
     </div>
   );
