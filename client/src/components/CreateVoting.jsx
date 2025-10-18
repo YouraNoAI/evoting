@@ -2,7 +2,6 @@
 import { useState } from "react";
 import Swal from "sweetalert2";
 import api from "../api/axios";
-import "../assets/css/create-voting.css";
 
 const CreateVoting = () => {
   const [title, setTitle] = useState("");

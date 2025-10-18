@@ -1,89 +1,115 @@
-# Voting API Documentation
+# 📄 Voting App API Documentation
 
 Base URL: `http://localhost:4000/api`
 
 ---
 
-## 🔐 Auth
+## 🔐 Authentication
 
-### Login
+### POST `/auth/login`
 
-**POST** `/auth/login`
-Body (JSON):
+Login user dengan NIM dan password.
+
+**Request Body**
 
 ```json
 {
-  "nim": "33241006",
-  "password": "password123"
+  "nim": "123456",
+  "password": "secret"
 }
 ```
 
-Response (200 OK):
+**Response**
 
 ```json
 {
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "nim": "33241006",
+  "token": "JWT_TOKEN",
+  "nim": "123456",
   "nama": "Arya Danuwarta",
-  "role": "admin"
+  "role": "user"
 }
 ```
 
-### Logout
+**Errors**
 
-**POST** `/auth/logout`
-Headers: `Authorization: Bearer <token>`
-Response (200 OK):
+* 400: NIM and password required
+* 401: Invalid credentials
+
+---
+
+### POST `/auth/logout`
+
+Logout user, menonaktifkan sesi.
+
+**Headers**
+
+```
+Authorization: Bearer JWT_TOKEN
+```
+
+**Response**
 
 ```json
-{ "ok": true }
+{
+  "message": "Logged out successfully."
+}
 ```
 
 ---
 
-## 🗳 Votings
+## 🗳 Voting Endpoints (User)
 
-### Get all votings
+### GET `/votings`
 
-**GET** `/votings`
-Headers: `Authorization: Bearer <token>`
-Response (200 OK):
+Ambil daftar voting.
+
+**Headers**
+
+```
+Authorization: Bearer JWT_TOKEN
+```
+
+**Response**
 
 ```json
 [
   {
-    "voting_id": 20,
-    "nama_voting": "Arya data",
-    "waktu_mulai": "2025-10-16T13:46:00.000Z",
-    "waktu_selesai": "2025-10-24T13:46:00.000Z"
+    "voting_id": 1,
+    "nama_voting": "Pemilihan Ketua",
+    "waktu_mulai": "2025-10-01T08:00:00Z",
+    "waktu_selesai": "2025-10-05T17:00:00Z"
   }
 ]
 ```
 
-### Get candidates by voting
+---
 
-**GET** `/votings/:id/candidates`
-Headers: `Authorization: Bearer <token>`
-Response (200 OK):
+### GET `/votings/:id/candidates`
+
+Ambil daftar kandidat untuk voting tertentu.
+
+**Response**
 
 ```json
 [
   {
     "candidate_id": 1,
-    "nama": "Arya",
-    "nim": "1234",
-    "foto_url": "/uploads/12345.png",
-    "deskripsi": "Calon hebat",
-    "visi_misi": "Bawa perubahan"
+    "nama": "John Doe",
+    "nim": "123456",
+    "foto_url": "/uploads/abc123.jpg",
+    "deskripsi": "Deskripsi kandidat",
+    "visi_misi": "Visi misi kandidat"
   }
 ]
 ```
 
-### Vote for a candidate
+---
 
-**POST** `/votings/:id/vote`
-Headers: `Authorization: Bearer <token>`
-Body (JSON):
+### POST `/votings/:id/vote`
+
+Voting untuk kandidat.
+
+**Request Body**
 
 ```json
 {
@@ -91,136 +117,151 @@ Body (JSON):
 }
 ```
 
-Response (200 OK):
+**Response**
 
 ```json
 {
-  "ok": true,
-  "message": "vote recorded"
+  "message": "Your vote has been successfully recorded."
 }
 ```
 
-Error jika sudah voting:
+**Errors**
 
-```json
-{ "error": "already voted" }
-```
+* 400: Invalid voting ID or candidate ID
+* 409: User already voted
 
 ---
 
-## 🛠 Admin
+## 🛠 Admin Endpoints
 
-> Semua endpoint admin butuh header: `Authorization: Bearer <admin_token>`
+### GET `/admin/votings`
 
-### Create user
+Ambil daftar voting (admin only).
 
-**POST** `/admin/users`
-Body (JSON):
+### POST `/admin/votings`
+
+Buat voting baru.
+
+**Request Body**
 
 ```json
 {
-  "nim": "33241007",
-  "nama": "Budi",
+  "nama_voting": "Pemilihan Ketua",
+  "waktu_mulai": "2025-10-01T08:00:00Z",
+  "waktu_selesai": "2025-10-05T17:00:00Z"
+}
+```
+
+**Response**
+
+```json
+{
+  "message": "Voting created successfully.",
+  "voting_id": 1
+}
+```
+
+### PUT `/admin/votings/:id`
+
+Update voting tertentu.
+
+**Request Body**
+
+```json
+{
+  "nama_voting": "Pemilihan Ketua Baru",
+  "waktu_mulai": "2025-10-02T08:00:00Z",
+  "waktu_selesai": "2025-10-06T17:00:00Z"
+}
+```
+
+### DELETE `/admin/votings/:id`
+
+Hapus voting beserta kandidat dan vote.
+
+---
+
+### POST `/admin/users`
+
+Buat user baru.
+
+**Request Body**
+
+```json
+{
+  "nim": "123456",
+  "nama": "Arya Danuwarta",
   "password": "secret",
   "role": "user"
 }
 ```
 
-Response (200 OK):
+---
 
-```json
-{ "ok": true }
-```
+### POST `/admin/upload-foto`
 
-### Create voting
+Upload foto kandidat.
 
-**POST** `/admin/votings`
-Body (JSON):
+**Form-data**
+
+* `foto` (file)
+
+**Response**
 
 ```json
 {
-  "nama_voting": "Pemilu HIMATIF",
-  "waktu_mulai": "2025-10-20T10:00:00Z",
-  "waktu_selesai": "2025-10-25T10:00:00Z"
+  "message": "Photo uploaded successfully.",
+  "url": "/uploads/abc123.jpg"
 }
 ```
 
-Response (201 Created):
+---
 
-```json
-{ "ok": true, "voting_id": 21 }
-```
+### POST `/admin/votings/:id/candidates`
 
-### Upload candidate photo
+Tambahkan kandidat ke voting.
 
-**POST** `/admin/upload-foto`
-FormData:
+**Form-data**
 
-```
-foto: <file>
-```
+* `nama`
+* `nim`
+* `deskripsi` (opsional)
+* `visi_misi` (opsional)
+* `foto` (file)
 
-Response:
+---
 
-```json
-{ "url": "/uploads/123456.png" }
-```
+### PUT `/admin/votings/:id/candidates/:cid`
 
-### Create candidate
+Update kandidat (foto opsional).
 
-**POST** `/admin/votings/:id/candidates`
-FormData:
+### DELETE `/admin/votings/:id/candidates/:cid`
 
-```
-nama: "Arya"
-nim: "1234"
-foto: <file>
-deskripsi: "Calon hebat"
-visi_misi: "Bawa perubahan"
-```
+Hapus kandidat beserta vote dan foto.
 
-Response:
+---
 
-```json
-{ "ok": true }
-```
+### GET `/admin/votings/:id/results`
 
-### List uploaded photos
+Dapatkan hasil voting.
 
-**GET** `/admin/fotos`
-Response:
-
-```json
-[
-  "/uploads/12345.png",
-  "/uploads/67890.png"
-]
-```
-
-### Voting results
-
-**GET** `/admin/votings/:id/results`
-Response (200 OK):
+**Response**
 
 ```json
 {
-  "voting_id": 20,
+  "voting_id": 1,
   "results": [
     {
       "candidate_id": 1,
-      "nama": "Arya",
-      "nim": "1234",
+      "nama": "John Doe",
+      "nim": "123456",
+      "foto_url": "/uploads/abc123.jpg",
+      "deskripsi": "Deskripsi kandidat",
+      "visi_misi": "Visi misi kandidat",
       "votes": 10
     }
   ]
 }
 ```
 
----
-
-## ⚠️ Notes
-
-* Semua request admin wajib pakai token admin.
-* Endpoints `/votings/:id/candidates` & `/votings/:id/results` wajib voting ID yang valid.
-* Foto candidate harus diupload sebelum membuat candidate agar `foto_url` tersedia.
-* Password di-hash pakai bcrypt saat membuat user.
+> Semua endpoint admin membutuhkan header `Authorization: Bearer JWT_TOKEN` dan role admin. User biasa hanya bisa akses voting, candidates, dan voting submission.
