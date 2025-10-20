@@ -8,8 +8,9 @@ const ProtectedRoute = ({ children, adminOnly = false }) => {
   // kalau belum login
   if (!user) return <Navigate to="/" replace />;
 
-  // kalau harus admin tapi user bukan admin
+  // Harus admin
   if (adminOnly && user.role !== "admin") return <Navigate to="/" replace />;
+
 
   return children;
 };

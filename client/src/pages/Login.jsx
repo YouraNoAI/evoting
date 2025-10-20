@@ -20,7 +20,7 @@ const Login = () => {
       if (res.data.role === "admin") {
         navigate("/admin");
       } else {
-        navigate("/votings");
+        navigate("/users");
       }
     } catch (err) {
       Swal.fire("Gagal", err.response?.data?.message || "Login gagal!", "error");

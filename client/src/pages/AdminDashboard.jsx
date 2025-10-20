@@ -8,9 +8,10 @@ const AdminDashboard = () => {
     const location = useLocation();
 
     useEffect(() => {
-        // jika path persis /admin (belum punya nested route), redirect ke results
         if (location.pathname === "/admin" || location.pathname === "/admin/") {
-            navigate("/admin/results", { replace: true });
+            navigate("/admin/voting-settings", { replace: true });
+        } else if (location.pathname === "/user" || location.pathname === "/user/") {
+            navigate("/user", { replace: true });
         }
     }, [location.pathname, navigate]);
 
@@ -20,14 +21,14 @@ const AdminDashboard = () => {
     };
 
     return (
-        <div className="admin-container">
-            <div className="admin-sidebar">
+        <div className="border border-black d-flex flex-row" style={{ minHeight: "100vh" }}>
+            <div className="d-flex flex-column p-3 border border-3 border-black ">
                 <h2>Admin Panel</h2>
-                <button onClick={() => navigate("/admin/results")}>Lihat Hasil Voting</button>
-                <button onClick={() => navigate("/admin/users")}>Edit User</button>
-                <button onClick={handleLogout}>Logout</button>
+                <button className="border border-3 border-black bg-warning m-1" onClick={() => navigate("/admin/voting-settings")}>Lihat Hasil Voting</button>
+                <button className="border border-3 border-black bg-warning m-1" onClick={() => navigate("/admin/user-settings")}>Edit User</button>
+                <button className="border border-3 border-black bg-warning m-1" onClick={handleLogout} >Logout</button>
             </div>
-            <div className="admin-contents">
+            <div className="border border-3 border-black flex-grow-1 p-3">
                 <Outlet/>
             </div>
         </div>

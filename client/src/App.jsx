@@ -1,19 +1,25 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+
 import Login from "./pages/Login";
 import AdminDashboard from "./pages/AdminDashboard";
-import VotingResults from "./components/VotingResults";
-import EditUsers from "./components/EditUsers";
+import Votings from "./pages/Voting";
+import User from "./pages/User";
 
+import VotingResults from "./components/VotingResult";
+import EditUsers from "./components/UserSetings";
+import VotingSettings from "./components/VotingSetings";
 
 function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
+          {/* Login */}
           <Route path="/" element={<Login />} />
 
+          {/* Admin routes */}
           <Route
             path="/admin"
             element={
@@ -22,16 +28,37 @@ function App() {
               </ProtectedRoute>
             }
           >
-            {/* Nested routes untuk admin */}
-            <Route path="results" element={<VotingResults />} />
-            <Route path="users" element={<EditUsers />} />
+            <Route path="voting-settings" element={<VotingSettings />} />
+            <Route path="user-settings" element={<EditUsers />} />
           </Route>
+          <Route path="voting/:id" element={
+            // <ProtectedRoute>
+            <VotingResults />
+            // </ProtectedRoute>
+          }
+          />
 
+          {/* User routes */}
+          <Route
+            path="/users"
+            element={
+              <ProtectedRoute>
+                <User />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/select-voting/:id"
+            element={
+              <ProtectedRoute>
+                <Votings />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
   );
 }
-
 
 export default App;
