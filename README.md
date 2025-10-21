@@ -77,8 +77,8 @@ e-voting-himatif/
 
 ### 1. Clone Repository
 ```bash
-git clone https://github.com/YouraNoAI/e-voting-himatif.git
-cd e-voting-himatif
+git clone https://github.com/YouraNoAI/evoting.git
+cd evoting
 ```
 
 ### 2. Setup Backend
