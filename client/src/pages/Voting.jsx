@@ -176,6 +176,32 @@ function Voting() {
           </div>
         </div>
       )}
+      <div
+      >
+        <div
+          className="position-fixed top-0 start-0 fw-bold py-2"
+          style={{
+            animation: "marquee 15s linear infinite",
+            transform: "translateX(100%)",
+          }}
+        >
+          Pilihlah kandidat berdasarkan keyakinan anda, pertimbangkan dengan matang sebelum
+          menekan tombol vote! Masa depan kiita ada di tangan anda 💪
+        </div>
+        <style>
+          {`
+      @keyframes marquee {
+        0% { transform: translateX(100%); }
+        100% { transform: translateX(-100%); }
+      }
+    `}
+        </style>
+      </div>
+      <button
+        role='button'
+        onClick={() => navigate("/users")}
+        className='position-fixed bottom-0 end-0 bg-warning'
+      >Back</button>
     </div>
   );
 }

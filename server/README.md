@@ -1,267 +1,127 @@
-# 📄 Voting App API Documentation
+# 🗳️ E-Voting API Documentation
 
-Base URL: `http://localhost:4000/api`
-
----
-
-## 🔐 Authentication
-
-### POST `/auth/login`
-
-Login user dengan NIM dan password.
-
-**Request Body**
-
-```json
-{
-  "nim": "123456",
-  "password": "secret"
-}
-```
-
-**Response**
-
-```json
-{
-  "token": "JWT_TOKEN",
-  "nim": "123456",
-  "nama": "Arya Danuwarta",
-  "role": "user"
-}
-```
-
-**Errors**
-
-* 400: NIM and password required
-* 401: Invalid credentials
+Backend server built with **Express.js** + **MySQL** + **JWT Authentication**.
 
 ---
 
-### POST `/auth/logout`
+## 🚀 Getting Started
 
-Logout user, menonaktifkan sesi.
-
-**Headers**
-
-```
-Authorization: Bearer JWT_TOKEN
+### Install Dependencies
+```bash
+npm install
 ```
 
-**Response**
-
-```json
-{
-  "message": "Logged out successfully."
-}
+### Setup Environment Variables
+Create `.env` file:
+```env
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=root
+DB_PASS=yourpassword
+DB_NAME=e_voting
+JWT_SECRET=supersecretkey
+JWT_EXPIRES_IN=7d
+PORT=4000
 ```
+
+### Run Server
+```bash
+node main.js
+```
+Server runs at: `http://localhost:4000`
 
 ---
 
-## 🗳 Voting Endpoints (User)
+## 🔑 Authentication Routes
 
-### GET `/votings`
-
-Ambil daftar voting.
-
-**Headers**
-
-```
-Authorization: Bearer JWT_TOKEN
-```
-
-**Response**
-
-```json
-[
-  {
-    "voting_id": 1,
-    "nama_voting": "Pemilihan Ketua",
-    "waktu_mulai": "2025-10-01T08:00:00Z",
-    "waktu_selesai": "2025-10-05T17:00:00Z"
-  }
-]
-```
+| Method | Endpoint | Description |
+|---------|-----------|-------------|
+| POST | `/api/auth/login` | Login with `nim` & `password`, returns JWT |
+| POST | `/api/auth/logout` | Logout and invalidate current session |
 
 ---
 
-### GET `/votings/:id/candidates`
+## 👥 User Voting Routes
 
-Ambil daftar kandidat untuk voting tertentu.
-
-**Response**
-
-```json
-[
-  {
-    "candidate_id": 1,
-    "nama": "John Doe",
-    "nim": "123456",
-    "foto_url": "/uploads/abc123.jpg",
-    "deskripsi": "Deskripsi kandidat",
-    "visi_misi": "Visi misi kandidat"
-  }
-]
-```
+| Method | Endpoint | Description |
+|---------|-----------|-------------|
+| GET | `/api/votings` | Get list of all votings |
+| GET | `/api/votings/:id` | Get detail of a specific voting |
+| GET | `/api/votings/:id/candidates` | Get candidates in specific voting |
+| POST | `/api/votings/:id/vote` | Submit a vote |
+| GET | `/api/votings/:id/results` | Get voting results (user) |
 
 ---
 
-### POST `/votings/:id/vote`
+## 🧑‍💼 Admin Voting Routes
 
-Voting untuk kandidat.
-
-**Request Body**
-
-```json
-{
-  "candidate_id": 1
-}
-```
-
-**Response**
-
-```json
-{
-  "message": "Your vote has been successfully recorded."
-}
-```
-
-**Errors**
-
-* 400: Invalid voting ID or candidate ID
-* 409: User already voted
+| Method | Endpoint | Description |
+|---------|-----------|-------------|
+| GET | `/api/admin/votings` | Get all votings (admin) |
+| POST | `/api/admin/votings` | Create new voting |
+| PUT | `/api/admin/votings/:id` | Update existing voting |
+| DELETE | `/api/admin/votings/:id` | Delete voting & related data |
+| GET | `/api/admin/votings/:id/results` | Get voting results (admin) |
 
 ---
 
-## 🛠 Admin Endpoints
+## 🧑‍🤝‍🧑 Candidate Management
 
-### GET `/admin/votings`
-
-Ambil daftar voting (admin only).
-
-### POST `/admin/votings`
-
-Buat voting baru.
-
-**Request Body**
-
-```json
-{
-  "nama_voting": "Pemilihan Ketua",
-  "waktu_mulai": "2025-10-01T08:00:00Z",
-  "waktu_selesai": "2025-10-05T17:00:00Z"
-}
-```
-
-**Response**
-
-```json
-{
-  "message": "Voting created successfully.",
-  "voting_id": 1
-}
-```
-
-### PUT `/admin/votings/:id`
-
-Update voting tertentu.
-
-**Request Body**
-
-```json
-{
-  "nama_voting": "Pemilihan Ketua Baru",
-  "waktu_mulai": "2025-10-02T08:00:00Z",
-  "waktu_selesai": "2025-10-06T17:00:00Z"
-}
-```
-
-### DELETE `/admin/votings/:id`
-
-Hapus voting beserta kandidat dan vote.
+| Method | Endpoint | Description |
+|---------|-----------|-------------|
+| POST | `/api/admin/votings/:id/candidates` | Add candidate (with photo) |
+| PUT | `/api/admin/votings/:id/candidates/:cid` | Update candidate info/photo |
+| DELETE | `/api/admin/votings/:id/candidates/:cid` | Delete candidate & related votes |
+| GET | `/api/admin/fotos` | List uploaded candidate photos |
 
 ---
 
-### POST `/admin/users`
+## 👤 User Management (Admin)
 
-Buat user baru.
-
-**Request Body**
-
-```json
-{
-  "nim": "123456",
-  "nama": "Arya Danuwarta",
-  "password": "secret",
-  "role": "user"
-}
-```
+| Method | Endpoint | Description |
+|---------|-----------|-------------|
+| GET | `/api/admin/users` | List all users |
+| POST | `/api/admin/users` | Create new user |
+| PUT | `/api/admin/users/:nim` | Update user info/password/role |
+| DELETE | `/api/admin/users/:nim` | Delete user |
 
 ---
 
-### POST `/admin/upload-foto`
+## 📤 Upload Management
 
-Upload foto kandidat.
-
-**Form-data**
-
-* `foto` (file)
-
-**Response**
-
-```json
-{
-  "message": "Photo uploaded successfully.",
-  "url": "/uploads/abc123.jpg"
-}
-```
+| Method | Endpoint | Description |
+|---------|-----------|-------------|
+| POST | `/api/admin/upload-foto` | Upload candidate photo |
 
 ---
 
-### POST `/admin/votings/:id/candidates`
+## 🔒 Middleware
 
-Tambahkan kandidat ke voting.
+### `authenticate`
+Validates JWT token from `Authorization` header.
 
-**Form-data**
-
-* `nama`
-* `nim`
-* `deskripsi` (opsional)
-* `visi_misi` (opsional)
-* `foto` (file)
+### `requireAdmin`
+Restricts route access to admin users only.
 
 ---
 
-### PUT `/admin/votings/:id/candidates/:cid`
+## 💾 Database Tables Overview
 
-Update kandidat (foto opsional).
-
-### DELETE `/admin/votings/:id/candidates/:cid`
-
-Hapus kandidat beserta vote dan foto.
+| Table | Columns |
+|--------|----------|
+| `users` | nim, nama, password, role |
+| `sessions` | id, user_nim, token, valid |
+| `votings` | voting_id, nama_voting, waktu_mulai, waktu_selesai |
+| `candidates` | candidate_id, voting_id, nama, nim, foto_url, deskripsi, visi_misi |
+| `votes` | vote_id, user_nim, candidate_id, voting_id |
 
 ---
 
-### GET `/admin/votings/:id/results`
+## 🧠 Notes
+- All `POST`, `PUT`, `DELETE` under `/api/admin/...` require valid **Admin JWT token**.
+- File uploads are stored under `/uploads` folder.
+- JWT token is required for all authenticated routes.
 
-Dapatkan hasil voting.
+---
 
-**Response**
-
-```json
-{
-  "voting_id": 1,
-  "results": [
-    {
-      "candidate_id": 1,
-      "nama": "John Doe",
-      "nim": "123456",
-      "foto_url": "/uploads/abc123.jpg",
-      "deskripsi": "Deskripsi kandidat",
-      "visi_misi": "Visi misi kandidat",
-      "votes": 10
-    }
-  ]
-}
-```
-
-> Semua endpoint admin membutuhkan header `Authorization: Bearer JWT_TOKEN` dan role admin. User biasa hanya bisa akses voting, candidates, dan voting submission.
+© 2025 E-Voting System | Made with ❤️ by Arya Danuwarta
