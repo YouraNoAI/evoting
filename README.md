@@ -174,5 +174,5 @@ Frontend jalan di: [http://localhost:5173](http://localhost:5173)
 
 ## ❤️ Credits
 Dibuat oleh **Arya Danuwarta**  
-Frontend & Backend: Fullstack JS  
+Frontend & Backend: Fullstack JS With AI  
 © 2025 — HIMATIF E-Voting System
