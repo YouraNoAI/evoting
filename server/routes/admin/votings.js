@@ -6,7 +6,7 @@ app.get('/api/admin/votings', authenticate, requireAdmin, async (_, res) => {
         );
         res.json(rows);
     } catch (err) {
-        console.error('📊 ADMIN GET VOTINGS ERROR:', err);
+        console.error('ADMIN GET VOTINGS ERROR:', err);
         res.status(500).json({ error: 'Server error fetching votings for admin.' });
     } finally {
         conn.release();
@@ -103,7 +103,7 @@ app.get('/api/admin/votings/:id/results', authenticate, requireAdmin, async (req
     `, [votingId, votingId]);
         res.json({ voting_id: votingId, results: rows });
     } catch (err) {
-        console.error('📈 ADMIN GET RESULTS ERROR:', err);
+        console.error('ADMIN GET RESULTS ERROR:', err);
         res.status(500).json({ error: 'Server error fetching voting results.' });
     } finally {
         conn.release();

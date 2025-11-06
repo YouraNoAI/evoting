@@ -1,12 +1,14 @@
 import axios from "axios";
 
+export const BASE_URL = "http://192.168.1.8:4000"; // tinggal ubah ini pas hosting
+
 const api = axios.create({
-  baseURL: "http://localhost:4000/api",
-  withCredentials: true, // kalo pake cookie
+  baseURL: `${BASE_URL}/api`,
+  withCredentials: true,
 });
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token"); // atau sessionStorage
+  const token = localStorage.getItem("token");
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });

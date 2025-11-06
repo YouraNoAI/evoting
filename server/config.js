@@ -20,7 +20,7 @@ const {
 } = process.env;
 
 if (!DB_HOST || !DB_USER || !DB_NAME || !JWT_SECRET) {
-  console.error('❌ Missing required environment variables. Please check your .env file.');
+  console.error('Missing required environment variables. Please check your .env file.');
   process.exit(1);
 }
 
@@ -102,7 +102,7 @@ async function authenticate(req, res, next) {
     req.user = { nim: payload.nim, role: payload.role, sid: payload.sid, token };
     next();
   } catch (err) {
-    console.error('🔑 AUTHENTICATION ERROR:', err);
+    console.error('AUTHENTICATION ERROR:', err);
     res.status(500).json({ error: 'Server error during authentication.' });
   } finally {
     conn.release();

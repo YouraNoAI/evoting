@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import api, { BASE_URL } from "../api/axios.jsx";
 
 function Voting() {
   const { id } = useParams();
@@ -12,48 +13,30 @@ function Voting() {
   const [countdown, setCountdown] = useState(10);
 
   useEffect(() => {
-    const fetchVoting = async () => {
-      setLoading(true);
+    const fetchData = async () => {
       try {
-        const token = localStorage.getItem("token");
+        setLoading(true);
+        const [resVoting, resCandidates] = await Promise.all([
+          api.get(`/votings/${id}`),
+          api.get(`/votings/${id}/candidates`),
+        ]);
 
-        const resVoting = await fetch(`http://localhost:4000/api/votings/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!resVoting.ok) {
-          console.error("Failed to fetch voting:", await resVoting.text());
-          setVoting(null);
-        } else {
-          const votingData = await resVoting.json();
-          setVoting(votingData);
-        }
-
-        const resCandidates = await fetch(`http://localhost:4000/api/votings/${id}/candidates`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (resCandidates.ok) {
-          const candData = await resCandidates.json();
-          const mapped = (candData || []).map((c) => ({
-            id: c.candidate_id ?? c.id,
-            nama: c.nama ?? c.name,
-            foto: c.foto_url ?? c.foto ?? c.photo ?? null,
-            deskripsi: c.deskripsi ?? c.description ?? "",
-          }));
-          setCandidates(mapped);
-        } else {
-          console.error("Failed to fetch candidates:", await resCandidates.text());
-          setCandidates([]);
-        }
-
-        setVoted(false);
+        setVoting(resVoting.data);
+        const mapped = (resCandidates.data || []).map((c) => ({
+          id: c.candidate_id ?? c.id,
+          nama: c.nama ?? c.name,
+          foto: c.foto_url ?? c.foto ?? c.photo ?? null,
+          deskripsi: c.deskripsi ?? c.description ?? "",
+        }));
+        setCandidates(mapped);
       } catch (err) {
-        console.error("Fetch voting detail error:", err);
+        console.error("Error fetching data:", err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchVoting();
+    fetchData();
   }, [id]);
 
   const handleVote = async (candidateId) => {
@@ -61,23 +44,11 @@ function Voting() {
     if (!window.confirm("Yakin ingin memilih kandidat ini?")) return;
 
     try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:4000/api/votings/${id}/vote`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ candidate_id: candidateId }),
-      });
-
-      const result = await res.json();
-      if (!res.ok) throw new Error(result.error || result.message || "Gagal vote");
+      await api.post(`/votings/${id}/vote`, { candidate_id: candidateId });
 
       setVoted(true);
       setShowThankYou(true);
 
-      // countdown + auto logout
       let sec = 10;
       const timer = setInterval(() => {
         sec -= 1;
@@ -88,8 +59,8 @@ function Voting() {
         }
       }, 1000);
     } catch (err) {
-      alert(err.message || "Gagal vote");
-      console.error("Vote error:", err);
+      alert(err?.response?.data?.message || "Gagal vote");
+      console.error(err);
     }
   };
 
@@ -102,42 +73,44 @@ function Voting() {
   if (!voting) return <div className="text-center mt-5">Voting tidak ditemukan</div>;
 
   return (
-    <div className="container py-5 position-relative" style={{ minHeight: "100vh" }}>
-      <div className="text-center mb-5">
-        <h2 className="fw-bold text-dark border-bottom border-3 border-black">
+    <div className="container py-5 position-relative voting-page">
+      <div className="running-text fw-semibold text-center">
+        Pilih kandidat dengan bijak — masa depan kita ada di tanganmu.
+      </div>
+
+      <div className="text-center mb-4 mt-5">
+        <h2 className="fw-bold text-dark border-bottom border-3 border-black mb-2">
           {voting.nama_voting ?? voting.judul ?? "-"}
         </h2>
-        <p className="text-secondary">
+        <p className="text-secondary small">
           {voting.deskripsi ?? voting.visi_misi ?? ""}
         </p>
       </div>
 
-      <div className="row g-4 d-flex justify-content-center align-items-stretch gap-4">
+      <div className="row g-4 justify-content-center">
         {candidates.map((c) => (
-          <div
-            className="p-3 col-12 col-sm-6 col-md-4 col-lg-3 border border-3 border-black rounded-3"
-            key={c.id}
-          >
-            <div className="card shadow-sm border-0 h-100">
+          <div key={c.id} className="col-12 col-sm-6 col-md-4 col-lg-3">
+            <div className="card h-100 border border-3 border-dark shadow-sm">
               {c.foto && (
                 <img
                   src={
                     c.foto.startsWith("/uploads")
-                      ? `http://localhost:4000${c.foto}`
+                      ? `${BASE_URL}${c.foto}`
                       : c.foto
                   }
                   alt={c.nama}
-                  className="card-img-top border border-3 border-black"
-                  style={{ height: "200px", objectFit: "cover" }}
+                  className="card-img-top"
                 />
               )}
-              <div className="card-body text-center d-flex flex-column">
-                <h5 className="card-title mb-2 fw-bold">{c.nama}</h5>
-                <p className="card-text text-muted small flex-grow-1">
-                  {c.deskripsi || "-"}
-                </p>
+              <div className="card-body text-center d-flex flex-column p-3">
+                <h5 className="fw-bold mb-2">{c.nama}</h5>
+                <p className="text-muted small flex-grow-1">{c.deskripsi || "-"}</p>
                 <button
-                  className={`btn ${voted ? "btn-secondary" : "btn-warning fw-bold text-dark border border-3 border-black"}`}
+                  className={`btn mt-2 ${
+                    voted
+                      ? "btn-secondary"
+                      : "btn-warning fw-bold text-dark border border-3 border-black"
+                  }`}
                   onClick={() => handleVote(c.id)}
                   disabled={voted}
                 >
@@ -150,58 +123,36 @@ function Voting() {
       </div>
 
       {showThankYou && (
-        <div
-          className="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"
-          style={{
-            background: "rgba(0,0,0,0.6)",
-            zIndex: 1050,
-          }}
-        >
-          <div className="bg-light text-center p-5 border border-3 border-dark rounded-3 shadow-lg" style={{ maxWidth: 500 }}>
-            <h2 className="fw-bold text-dark mb-3">
+        <div className="thankyou-overlay">
+          <div className="thankyou-box">
+            <h3 className="fw-bold text-dark mb-3">
               Terimakasih Telah Berpartisipasi!
-            </h2>
-            <p className="text-dark">
-              Anda telah ikut serta dalam pemilihan{" "}
+            </h3>
+            <p className="text-dark small">
+              Anda ikut dalam pemilihan{" "}
               <span className="fw-semibold">{voting.nama_voting ?? voting.judul}</span>.
             </p>
-            <p className="text-secondary mb-4">
-              Silakan logout dan tunggu acara voting selanjutnya.<br />
-              Anda akan logout otomatis dalam{" "}
+            <p className="text-secondary small mb-3">
+              Logout otomatis dalam{" "}
               <span className="fw-bold text-dark">{countdown}</span> detik.
             </p>
-            <button className="btn btn-dark fw-bold border border-3 border-black" onClick={handleLogout}>
+            <button
+              className="btn btn-dark fw-bold border border-3 border-black"
+              onClick={handleLogout}
+            >
               Logout Sekarang
             </button>
           </div>
         </div>
       )}
-      <div
-      >
-        <div
-          className="position-fixed top-0 start-0 fw-bold py-2"
-          style={{
-            animation: "marquee 15s linear infinite",
-            transform: "translateX(100%)",
-          }}
-        >
-          Pilihlah kandidat berdasarkan keyakinan anda, pertimbangkan dengan matang sebelum
-          menekan tombol vote! Masa depan kiita ada di tangan anda 💪
-        </div>
-        <style>
-          {`
-      @keyframes marquee {
-        0% { transform: translateX(100%); }
-        100% { transform: translateX(-100%); }
-      }
-    `}
-        </style>
-      </div>
+
       <button
-        role='button'
+        role="button"
         onClick={() => navigate("/users")}
-        className='position-fixed bottom-0 end-0 bg-warning'
-      >Back</button>
+        className="btn btn-warning position-fixed bottom-0 end-0 fw-bold border border-3 border-black"
+      >
+        Back
+      </button>
     </div>
   );
 }

@@ -40,7 +40,7 @@ app.post('/api/auth/logout', authenticate, async (req, res) => {
     await conn.execute('UPDATE sessions SET valid = 0 WHERE id = ?', [req.user.sid]);
     res.json({ message: 'Logged out successfully.' });
   } catch (err) {
-    console.error('🚪 LOGOUT ERROR:', err);
+    console.error('LOGOUT ERROR:', err);
     res.status(500).json({ error: 'Server error during logout.' });
   } finally {
     conn.release();

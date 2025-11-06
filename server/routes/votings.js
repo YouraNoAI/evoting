@@ -6,7 +6,7 @@ app.get('/api/votings', authenticate, async (_, res) => {
     );
     res.json(rows);
   } catch (err) {
-    console.error('🗳️ GET VOTINGS ERROR:', err);
+    console.error('GET VOTINGS ERROR:', err);
     res.status(500).json({ error: 'Server error fetching votings.' });
   } finally {
     conn.release();
@@ -28,7 +28,7 @@ app.get('/api/votings/:id', authenticate, async (req, res) => {
     }
     res.json(rows[0]);
   } catch (err) {
-    console.error('🗳️ GET VOTING DETAIL ERROR:', err);
+    console.error('GET VOTING DETAIL ERROR:', err);
     res.status(500).json({ error: 'Server error fetching voting detail.' });
   } finally {
     conn.release();
@@ -47,7 +47,7 @@ app.get('/api/votings/:id/candidates', authenticate, async (req, res) => {
     );
     res.json(rows);
   } catch (err) {
-    console.error('🧑‍🤝‍🧑 GET CANDIDATES ERROR:', err);
+    console.error('GET CANDIDATES ERROR:', err);
     res.status(500).json({ error: 'Server error fetching candidates.' });
   } finally {
     conn.release();
@@ -84,7 +84,7 @@ app.post('/api/votings/:id/vote', authenticate, async (req, res) => {
     );
     if (previousVote.length > 0) {
       await conn.rollback();
-      return res.status(409).json({ error: 'Voting nya sekali aja bre, jangan serakah 😭' });
+      return res.status(409).json({ error: 'Anda telah melakukan voting sebelum nya, data tidak di rekam ' });
     }
 
     // Record the vote
@@ -99,7 +99,7 @@ app.post('/api/votings/:id/vote', authenticate, async (req, res) => {
     res.json({ message: 'Your vote has been successfully recorded.' });
   } catch (err) {
     await conn.rollback();
-    console.error('📩 VOTE RECORDING ERROR:', err);
+    console.error('VOTE RECORDING ERROR:', err);
     res.status(500).json({ error: 'Server error processing your vote.' });
   } finally {
     conn.release();
@@ -126,7 +126,7 @@ app.get('/api/votings/:id/results', authenticate, async (req, res) => {
     const totalVotes = rows.reduce((sum, r) => sum + Number(r.votes || 0), 0);
     res.json({ voting_id: votingId, totalVotes, results: rows });
   } catch (err) {
-    console.error('📈 GET RESULTS ERROR:', err);
+    console.error('GET RESULTS ERROR:', err);
     res.status(500).json({ error: 'Server error fetching voting results.' });
   } finally {
     conn.release();
@@ -170,10 +170,10 @@ app.delete('/api/admin/votings/:id/candidates/:cid', authenticate, requireAdmin,
         const filePath = path.join(__dirname, fotoUrl);
         if (fs.existsSync(filePath)) {
           fs.unlinkSync(filePath);
-          console.log(`🗑️ Deleted candidate photo: ${filePath}`);
+          console.log(`Deleted candidate photo: ${filePath}`);
         }
       } catch (e) {
-        console.warn('⚠️ Failed to delete candidate photo:', e.message);
+        console.warn('Failed to delete candidate photo:', e.message);
       }
     }
 
@@ -184,7 +184,7 @@ app.delete('/api/admin/votings/:id/candidates/:cid', authenticate, requireAdmin,
     res.json({ message: 'Candidate deleted successfully.' });
   } catch (err) {
     await conn.rollback();
-    console.error('🗑️ ADMIN DELETE CANDIDATE ERROR:', err);
+    console.error('ADMIN DELETE CANDIDATE ERROR:', err);
     res.status(500).json({ error: 'Server error deleting candidate.' });
   } finally {
     conn.release();

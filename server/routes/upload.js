@@ -12,7 +12,7 @@ app.get('/api/admin/fotos', authenticate, requireAdmin, (_, res) => {
     const urls = files.map(f => `/uploads/${f}`);
     res.json(urls);
   } catch (err) {
-    console.error('🖼️ ADMIN GET PHOTOS ERROR:', err);
+    console.error('ADMIN GET PHOTOS ERROR:', err);
     res.status(500).json({ error: 'Server error reading uploaded photos.' });
   }
 });

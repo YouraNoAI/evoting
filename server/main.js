@@ -10,7 +10,4 @@ import './routes/admin/users.js';
 import './routes/upload.js';
 import './routes/candidate.js';
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running at http://localhost:${PORT}`);
-  console.log('Press Ctrl+C to stop.');
-});
+app.listen(PORT, '0.0.0.0', () => console.log(`🚀 Server running on http://0.0.0.0:${PORT}`));

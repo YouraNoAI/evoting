@@ -452,13 +452,13 @@ function VotingSettings() {
                         onClick={() => startEdit(voting)}
                         className="btn btn-outline-dark"
                       >
-                        ✏️ Edit
+                        Edit
                       </button>
                       <button
                         onClick={() => handleDeleteVoting(voting.voting_id)}
                         className="btn btn-outline-danger"
                       >
-                        🗑️ Hapus
+                        Hapus
                       </button>
                     </>
                   )}

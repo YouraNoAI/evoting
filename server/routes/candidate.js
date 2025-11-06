@@ -92,17 +92,17 @@ app.put(
           const oldPath = path.join(__dirname, previousFotoUrl);
           if (fs.existsSync(oldPath)) {
             fs.unlinkSync(oldPath);
-            console.log(`🗑️ Deleted old photo: ${oldPath}`);
+            console.log(`Deleted old photo: ${oldPath}`);
           }
         } catch (e) {
-          console.warn('⚠️ Failed to remove old photo file:', e.message);
+          console.warn('Failed to remove old photo file:', e.message);
         }
       }
       await conn.commit();
       res.json({ message: 'Candidate updated successfully.' });
     } catch (err) {
       await conn.rollback();
-      console.error('🔄 ADMIN UPDATE CANDIDATE ERROR:', err);
+      console.error('ADMIN UPDATE CANDIDATE ERROR:', err);
       res.status(500).json({ error: 'Server error updating candidate.' });
     } finally {
       conn.release();
@@ -150,10 +150,10 @@ app.delete('/api/admin/votings/:id/candidates/:cid', authenticate, requireAdmin,
         const filePath = path.join(__dirname, fotoUrlToDelete);
         if (fs.existsSync(filePath)) {
           fs.unlinkSync(filePath);
-          console.log(`🗑️ Deleted candidate photo file: ${filePath}`);
+          console.log(`Deleted candidate photo file: ${filePath}`);
         }
       } catch (e) {
-        console.warn('⚠️ Failed to remove candidate photo file:', e.message);
+        console.warn('Failed to remove candidate photo file:', e.message);
       }
     }
 
@@ -161,7 +161,7 @@ app.delete('/api/admin/votings/:id/candidates/:cid', authenticate, requireAdmin,
     res.json({ message: 'Candidate and associated votes deleted successfully.' });
   } catch (err) {
     await conn.rollback();
-    console.error('🔥 ADMIN DELETE CANDIDATE ERROR:', err);
+    console.error('ADMIN DELETE CANDIDATE ERROR:', err);
     res.status(500).json({ error: 'Server error deleting candidate.' });
   } finally {
     conn.release();

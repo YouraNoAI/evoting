@@ -75,7 +75,7 @@ export default function User() {
       <button
       role='button'
         onClick={() => navigate("/")}
-        className='position-absolute bottom-0 end-0 bg-warning'
+        className='btn btn-warning position-fixed bottom-0 end-0 fw-bold border border-3 border-black'
       >Logout</button>
     </div>
   );

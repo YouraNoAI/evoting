@@ -1,0 +1,90 @@
+/* Mobile */
+@media (max-width: 576px) {
+  .container {
+    padding: 0.5rem;
+  }
+
+  h1 { font-size: 1.5rem; }
+  h2 { font-size: 1.3rem; }
+
+  .btn {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  .table, .card, .alert {
+    font-size: 0.85rem;
+  }
+
+  .card-body { padding: 0.8rem !important; }
+  .card-img-top { height: 150px !important; }
+
+  .admin-sidebar {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .admin-sidebar button {
+    flex: 1 1 45%;
+    font-size: 0.8rem;
+  }
+
+  .admin-content { padding: 0.8rem; }
+
+  .candidate-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .candidate-img {
+    width: 5.5rem;
+    height: 5.5rem;
+  }
+
+  .thankyou-box {
+    width: 90%;
+    padding: 1rem;
+  }
+}
+
+/* Tablet */
+@media (max-width: 768px) {
+  h1 { font-size: 1.7rem; }
+  h2 { font-size: 1.4rem; }
+
+  .card-img-top { height: 180px !important; }
+
+  .admin-dashboard {
+    flex-direction: column;
+  }
+
+  .admin-sidebar {
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-around;
+    border-right: none;
+    border-bottom: 3px solid #000;
+  }
+
+  .admin-sidebar h2 { display: none; }
+  .admin-sidebar button { flex: 1; margin: 0 0.4rem; }
+
+  .admin-content { padding: 1rem; }
+
+  .candidate-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  }
+}
+
+/* Laptop & Large */
+@media (min-width: 1024px) {
+  .container {
+    max-width: 1100px;
+  }
+}
+
+@media (min-width: 1400px) {
+  .container {
+    max-width: 1280px;
+  }
+}
